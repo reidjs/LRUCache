@@ -2,6 +2,7 @@ require_relative 'p02_hashing'
 require_relative 'p04_linked_list'
 require 'pry'
 class HashMap
+  include Enumerable
   attr_reader :count
 
   def initialize(num_buckets = 8)
@@ -10,10 +11,18 @@ class HashMap
   end
 
   def include?(key)
+    return false if get(key).nil?
+    true 
   end
 
   def set(key, val)
-    @store[bucket(key)].append(key, val)
+    list = @store[bucket(key)]
+    if get(key).nil?
+      list.append(key, val)
+      @count += 1
+    else 
+      list.update(key, val)
+    end 
   end
 
   def get(key)
@@ -23,19 +32,33 @@ class HashMap
     # binding.pry
   end
 
+  def get_list(key)
+    @store[bucket(key)]
+  end 
+
   def delete(key)
+    if include?(key)
+      get_list(key).remove(key) 
+      @count -= 1
+    end 
   end
 
   def each
+    @store.each do |list|
+        list.each do |node|
+          yield [node.key, node.val] 
+          # binding.pry
+        end 
+    end 
   end
 
   # uncomment when you have Enumerable included
-  # def to_s
-  #   pairs = inject([]) do |strs, (k, v)|
-  #     strs << "#{k.to_s} => #{v.to_s}"
-  #   end
-  #   "{\n" + pairs.join(",\n") + "\n}"
-  # end
+  def to_s
+    pairs = inject([]) do |strs, (k, v)|
+      strs << "#{k.to_s} => #{v.to_s}"
+    end
+    "{\n" + pairs.join(",\n") + "\n}"
+  end
 
   alias_method :[], :get
   alias_method :[]=, :set
