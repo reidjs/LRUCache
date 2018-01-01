@@ -1,6 +1,6 @@
 require_relative 'p02_hashing'
 require_relative 'p04_linked_list'
-
+require 'pry'
 class HashMap
   attr_reader :count
 
@@ -13,9 +13,14 @@ class HashMap
   end
 
   def set(key, val)
+    @store[bucket(key)].append(key, val)
   end
 
   def get(key)
+    # @store[key.hash % num_buckets]
+    
+    @store[bucket(key)].get(key)
+    # binding.pry
   end
 
   def delete(key)
@@ -46,5 +51,6 @@ class HashMap
 
   def bucket(key)
     # optional but useful; return the bucket corresponding to `key`
+    key.hash % num_buckets
   end
 end
