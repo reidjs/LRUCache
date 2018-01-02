@@ -3,7 +3,7 @@ require_relative 'p04_linked_list'
 require 'pry'
 class HashMap
   include Enumerable
-  attr_reader :count
+  attr_reader :count, :store
 
   def initialize(num_buckets = 8)
     @store = Array.new(num_buckets) { LinkedList.new }
@@ -18,6 +18,7 @@ class HashMap
   def set(key, val)
     list = @store[bucket(key)]
     if get(key).nil?
+      resize! if count >= @store.length 
       list.append(key, val)
       @count += 1
     else 
@@ -27,7 +28,6 @@ class HashMap
 
   def get(key)
     # @store[key.hash % num_buckets]
-    
     @store[bucket(key)].get(key)
     # binding.pry
   end
@@ -70,6 +70,20 @@ class HashMap
   end
 
   def resize!
+    # temp_store = Array.new(num_buckets * 2) { LinkedList.new }
+    new_hash = HashMap.new(num_buckets * 2)
+    @store.each do |list|
+      list.each do |node|
+        new_hash.set(node.key, node.val)
+      end 
+    end 
+    @store = new_hash.store 
+    # @store.each_with_index do |list|
+    #   list.each do |node|
+
+    #   end 
+    # end 
+    # @store = temp_store
   end
 
   def bucket(key)
