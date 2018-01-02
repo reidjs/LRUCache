@@ -1,6 +1,6 @@
 require_relative 'p05_hash_map'
 require_relative 'p04_linked_list'
-
+require 'pry'
 class LRUCache
   attr_reader :count
   def initialize(max, prc)
@@ -15,6 +15,12 @@ class LRUCache
   end
 
   def get(key)
+    if @map[key]
+      # binding.pry
+      return @map[key].val
+    else 
+      calc!(key)
+    end 
   end
 
   def to_s
@@ -25,6 +31,9 @@ class LRUCache
 
   def calc!(key)
     # suggested helper method; insert an (un-cached) key
+    @store.append(key, @prc.call(key))
+    @map[key] = @store.last
+    @map[key].val
   end
 
   def update_node!(node)
