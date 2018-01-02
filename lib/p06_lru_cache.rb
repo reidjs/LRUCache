@@ -15,12 +15,16 @@ class LRUCache
   end
 
   def get(key)
+    val = nil
     if @map[key]
       # binding.pry
-      return @map[key].val
+      update_node!(@map[key])
+      val = @map[key].val
     else 
-      calc!(key)
+      val = calc!(key)
     end 
+    eject! if count > @max
+    val
   end
 
   def to_s
@@ -38,8 +42,19 @@ class LRUCache
 
   def update_node!(node)
     # suggested helper method; move a node to the end of the list
+    # print to_s
+    node.remove 
+    @store.append(node.key, node.val)
+    @map[node.key] = node 
+    # print to_s
   end
 
   def eject!
+    # p count
+    key = @store.first.key
+    @map.delete(key)
+    @store.remove(key)
+    # p count
   end
 end
+
